@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// public routes
 Route::get('/contact-requests', [ContactRequestsController::class, 'index']);
 Route::get('/contact-requests/{id}', [ContactRequestsController::class, 'show']);
 Route::post('/contact-requests', [ContactRequestsController::class, 'store']);
@@ -44,7 +45,7 @@ Route::post('/auth/register', [UsersController::class, 'store']);
 Route::post('/auth/login', [UsersController::class, 'login']);
 
 
-
+// private routes
 Route::group(['middleware' => ['auth:sanctum']],  function () {
     Route::delete('/users/{id}', [UsersController::class, 'destroy']);
     Route::patch('/users/{id}', [UsersController::class, 'update']);

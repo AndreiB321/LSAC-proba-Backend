@@ -29,17 +29,18 @@ class EnrolmentController extends Controller
      */
     public function store(Request $request, $id)
     {
+        // check if user is student
         if (strcmp(auth()->user()->role, 'student') != 0)
             return response()->json(["message" => "Unauthorized."], 403);
 
-        
+        // check if id exists
         if (TutoringClass::select('id')->where('id', $id)->exists() == 0)
             return response()->json(['errors' => ['id' => ['The id is invalid.']]], 400);
 
         $user = User::find(auth()->user()->id);
         $class = TutoringClass::find($id);
+        // add enrolment
         $user->tutoringClass()->attach($class);
-        //$class->user()->attach($user);
 
         return Enrolment::all();
     }
@@ -75,6 +76,6 @@ class EnrolmentController extends Controller
      */
     public function destroy($id)
     {
-        Enrolment::destroy($id);
+        //
     }
 }

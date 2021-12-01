@@ -28,6 +28,7 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
+        // check fields
         $fields = $request->validate([
             'firstname' => ['required', 'max:50'],
             'lastname' => ['required', 'max:50'],
@@ -37,11 +38,14 @@ class UsersController extends Controller
             'role' => ['required', Rule::in(['student', 'teacher'])],
         ]);
 
+        // check if password and confirmation password are equal
+        // check if email and role are assigned correctly
         if (strcmp($request->get('password'), $request->get('confirmation_password')) == 0 &&
             (preg_match("/(.+)@onmicrosoft.upb.ro/", $request->get('email')) &&
             strcmp($request->get('role'), 'teacher') == 0 || 
             preg_match("/(.+)@stud.upb.ro/", $request->get('email')) &&
             strcmp($request->get('role'), 'student') == 0)) {
+            // create user
             $user = User::create([
                 'firstname' => $fields['firstname'],
                 'lastname' => $fields['lastname'],
@@ -62,6 +66,7 @@ class UsersController extends Controller
      */
     public function show($id)
     {
+        // check if id exists
         if (User::select('id')->where('id',$id)->exists())
             return User::find($id);
         return response()->json(['errors' => ['id' => ['The id is invalid.']]], 404);
@@ -76,14 +81,17 @@ class UsersController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // check if logged user updates its fields
         if (auth()->user()->id != $id)
             return response()->json(["message" => "Unauthorized."], 403);
-
+        // check if password and confirmation_password are equal
         if ($request->has('password') xor $request->has('confirmation_password')) {
             return response()->json(['errors' => ['input' => ['The input is invalid.']]], 400);
         }
         
+        // check if id exists
         if (User::select('id')->where('id',$id)->exists()) {
+            // check if field exists and updates data
             if ($request->has('firstname'))
                 User::where('id', $id)->where('id', $id)->update(array('firstname' => $request->get('firstname')));
             if ($request->has('lastname'))
@@ -107,9 +115,10 @@ class UsersController extends Controller
      */
     public function destroy($id)
     {
+        // check if logged user deletes himself
         if (auth()->user()->id != $id)
             return response()->json(["message" => "Unauthorized."], 403);
-
+        // check if id exists
         if (User::select('id')->where('id',$id)->exists()) {
             return User::destroy($id);
         }
@@ -118,17 +127,17 @@ class UsersController extends Controller
 
     public function login(Request $request) {
 
+        // check if fields exist
         if (!($request->has('password')) || !($request->has('email'))) {
             return response()->json(['errors' => ['input' => ['The input is invalid.']]], 400);
         }
-
+        // validate fields
         $fields = $request->validate([
             'email' => 'required|string',
             'password' => 'required|string'
         ]);
 
-        
-
+    
         // Check email
         $user = User::where('email', $fields['email'])->first();
 
@@ -136,7 +145,8 @@ class UsersController extends Controller
         if(!$user || !Hash::check($fields['password'], $user->password)) {
             return response(['message' => 'Bad creds'], 401);
         }
-
+        
+        // create token for user
         $token = $user->createToken('myapptoken')->plainTextToken;
 
         $response = [
@@ -154,11 +164,5 @@ class UsersController extends Controller
             'message' => 'Logged out'
         ];
     }
-
-
-
-
-
-
 
 }

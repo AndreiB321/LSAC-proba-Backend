@@ -16,11 +16,13 @@ class ContactRequestsController extends Controller
     {
         $contacts = ContactRequests::all();
 
+        // check query
         if ($request->has('filterBy')) {
-
+            // decode json
             $filterRequest = $request->get('filterBy');
             $fields = json_decode($filterRequest, true);
             
+            // check fields
             if (array_key_exists('email', $fields)) {
                 $contacts = $contacts->where('email', $fields['email'])->values();
             }
@@ -36,7 +38,9 @@ class ContactRequestsController extends Controller
             return $contacts;
         }
 
+        // check fields
         if ($request->has('sortBy') && $request->has('order')) {
+            // verify fields
             if (preg_match('(email|id|name|message)', $request->get('sortBy')) === 1
                 && preg_match('(desc|asc)', $request->get('order')) === 1) {
                 return ContactRequests::orderBy($request->get('sortBy'), $request->get('order'))->get();
@@ -53,6 +57,7 @@ class ContactRequestsController extends Controller
      */
     public function store(Request $request)
     {
+        // verify fields
         $request->validate([
             'name' => ['required', 'max:50'],
             'email' =>['required', 'max:50'],
@@ -60,6 +65,7 @@ class ContactRequestsController extends Controller
             'is_resolved' => 'sometimes|nullable'
         ]);
 
+        // validate email
         $result = filter_var($request->get('email'), FILTER_VALIDATE_EMAIL);
         if ($result == false)
             return response()->json(['errors' => ['email' => ['The email is invalid.']]], 400);
@@ -76,8 +82,10 @@ class ContactRequestsController extends Controller
      */
     public function show($id)
     {
+        // check if id exists
         if (ContactRequests::select('id')->where('id',$id)->exists())
             return ContactRequests::find($id);
+        // send error
         return response()->json(['errors' => ['id' => ['The id is invalid.']]], 404);
     }
 
@@ -90,7 +98,9 @@ class ContactRequestsController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // check field
         if ($request->get('is_resolved') == 'true' or $request->get('is_resolved') == 'false') {
+            // check if id exists
             if (ContactRequests::select('id')->where('id',$id)->exists())
                 return ContactRequests::where('id', $id)->update(array('is_resolved' => $request->get('is_resolved')));
             return response()->json(['errors' => ['Error occured.']], 404);
@@ -106,6 +116,7 @@ class ContactRequestsController extends Controller
      */
     public function destroy($id)
     {
+        // check if id exists
         if (ContactRequests::select('id')->where('id',$id)->exists())
             return ContactRequests::destroy($id);
         return response()->json(['errors' => ['id' => ['The id is invalid.']]], 404);

@@ -16,7 +16,7 @@ class TutoringClass extends Model
     ];
 
 
-    
+    // for many to many relationship
     public function user() {
         return $this->belongsToMany(User::class, 'enrolments')->withTimestamps();
     }

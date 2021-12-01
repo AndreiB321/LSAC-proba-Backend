@@ -25,26 +25,11 @@ class ReviewsController extends Controller
      */
     public function store(Request $request)
     {
+        // check fields
         $request->validate([
             'message' => ['required', 'max:500'],
             'user_id' => 'required'
         ]);
-        // $this->validate($request, [            
-//   'email' => 'required|regex:/(.+)@(.+)\.(.+)/i',
-// ]);
-
-
-        //// to check if is valid
-        // check body
-
-        // $result = filter_var($request->get('email'), FILTER_VALIDATE_EMAIL);
-        // if ($result == false)
-        //     return 'Status 400';
-
-
-// $this->validate($request, [            
-//   'email' => 'required|regex:/(.+)@(.+)\.(.+)/i',
-// ]);
 
         return Reviews::create($request->all());
     }
@@ -57,8 +42,10 @@ class ReviewsController extends Controller
      */
     public function show($id)
     {
+        // check if field exists
         if (Reviews::select('id')->where('id',$id)->exists())
             return Reviews::find($id);
+        // error
         return response()->json(['errors' => ['id' => ['The id is invalid.']]], 404);
     }
 
@@ -71,12 +58,15 @@ class ReviewsController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // check if id exists
         if(Reviews::select('id')->where('id',$id)->exists() == 0)
             return response()->json(['errors' => ['id' => ['The id is invalid.']]], 404);
     
+        // check if logged user updates its review
         if (auth()->user()->id != Reviews::where("id",$id)->get('user_id')->first()->user_id)
             return response()->json(["message" => "Unauthorized."], 403);
         
+        // check if field exists 
         if ($request->has('message') == 0)
             return response()->json(['errors' => ['input' => ['The input is invalid.']]], 400);
 
@@ -91,9 +81,10 @@ class ReviewsController extends Controller
      */
     public function destroy($id)
     {
+        // check if logged user deletes its review
         if (auth()->user()->id != $id)
             return response()->json(["message" => "Unauthorized."], 403);
-
+        // check if review exists
         if (Reviews::select('id')->where('id',$id)->exists())
             return Reviews::destroy($id);
         return response()->json(['errors' => ['id' => ['The id is invalid.']]], 404);

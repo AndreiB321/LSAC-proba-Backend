@@ -31,15 +31,18 @@ class TutoringClassController extends Controller
      */
     public function store(Request $request)
     {
+        // validate fields
         $fields = $request->validate([
             'description' => ['required', 'max:500'],
             'subject' => ['required', 'max:80']
         ]);
 
+        // check role equals teacher
         if (strcmp(User::where('id', auth()->user()->id)->first()->role, 'teacher') != 0) {
             return response()->json(["message" => "Unauthorized."], 403);
         }
 
+        // create Tutoring Class
         $tutoringClass = TutoringClass::create([
             'description' => $fields['description'],
             'subject' => $fields['subject'],
@@ -56,6 +59,7 @@ class TutoringClassController extends Controller
      */
     public function show($id)
     {
+        // check if id exists
         if (TutoringClass::select('id')->where('id',$id)->exists())
             return TutoringClass::find($id);
         return response()->json(['errors' => ['id' => ['The id is invalid.']]], 404);
@@ -70,6 +74,7 @@ class TutoringClassController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // check if field exists
         if (!$request->has('description'))
             return response()->json(['errors' => ['input' => ['The input is invalid.']]], 400);
 
@@ -90,7 +95,7 @@ class TutoringClassController extends Controller
      */
     public function destroy($id)
     {
-
+        // check if if exists
         if (TutoringClass::select('id')->where('id', $id)->exists() == 0)
             return response()->json(['errors' => ['id' => ['The id is invalid.']]], 404);
 
