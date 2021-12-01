@@ -27,35 +27,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-
-// Route::post('/auth/register', function() {
-//     return '/auth/register';
-// });
-
-// Route::post('/auth/login', function() {
-//     return '/auth/login';
-// });
-
-// Route::get('/users', function() {
-//     return '/users';
-// });
-
-// Route::get('/users/{id}', function() {
-//     return '/users/{id}';
-// });
-
-// Route::patch('/users/{id}', function() {
-//     return '/users/{id}';
-// });
-
-// Route::delete('/users/{id}', function() {
-//     return '/users/{id}';
-// });
-
-// Route::post('/register', [AuthController::class, 'register']);
-// Route::post('/login', [AuthController::class, 'login']);
-
-
 Route::get('/contact-requests', [ContactRequestsController::class, 'index']);
 Route::get('/contact-requests/{id}', [ContactRequestsController::class, 'show']);
 Route::post('/contact-requests', [ContactRequestsController::class, 'store']);
@@ -65,53 +36,30 @@ Route::patch('/contact-requests/{id}', [ContactRequestsController::class, 'updat
 Route::get('/reviews', [ReviewsController::class, 'index']);
 Route::get('/reviews/{id}', [ReviewsController::class, 'show']);
 Route::post('/reviews', [ReviewsController::class, 'store']);
-Route::delete('/reviews/{id}', [ReviewsController::class, 'destroy']);
-Route::patch('/reviews/{id}', [ReviewsController::class, 'update']);
 
 
 Route::get('/users', [UsersController::class, 'index']);
 Route::get('/users/{id}', [UsersController::class, 'show']);
 Route::post('/auth/register', [UsersController::class, 'store']);
 Route::post('/auth/login', [UsersController::class, 'login']);
-Route::delete('/users/{id}', [UsersController::class, 'destroy']);
-Route::patch('/users/{id}', [UsersController::class, 'update']);
 
 
-Route::get('/tutoring-classes', [TutoringClassController::class, 'index']);
-Route::get('/tutoring-classes/{id}', [TutoringClassController::class, 'show']);
-Route::post('/tutoring-classes', [TutoringClassController::class, 'store']);
-Route::delete('/tutoring-classes/{id}', [TutoringClassController::class, 'destroy']);
-Route::patch('/tutoring-classes/{id}', [TutoringClassController::class, 'update']);
 
-// Route::get('/reviews', function(){
-//     return 'reviews';
-// });
+Route::group(['middleware' => ['auth:sanctum']],  function () {
+    Route::delete('/users/{id}', [UsersController::class, 'destroy']);
+    Route::patch('/users/{id}', [UsersController::class, 'update']);
 
-// Route::get('/products', function(){
-//     return 'products2';
-// });
+    Route::delete('/reviews/{id}', [ReviewsController::class, 'destroy']);
+    Route::patch('/reviews/{id}', [ReviewsController::class, 'update']);
 
-// Route::post('/reviews', function() {
-//     return Reviews::create([
-//         'message' => 'Alex',
-//     ]);
-// });
+    Route::get('/tutoring-classes', [TutoringClassController::class, 'index']);
+    Route::get('/tutoring-classes/{id}', [TutoringClassController::class, 'show']);
+    Route::post('/tutoring-classes', [TutoringClassController::class, 'store']);
+    Route::delete('/tutoring-classes/{id}', [TutoringClassController::class, 'destroy']);
+    Route::patch('/tutoring-classes/{id}', [TutoringClassController::class, 'update']);
 
-// Route::post('/contact-requests', function() {
-//     return ContactRequests::create([
-//         'name' => 'Alex',
-//         'email' => 'test@gmail.com',
-//         'message' => 'un inceput de test',
-//         'is_resolved' => 'false'
-//     ]);
-// });
+    Route::post('/tutoring-classes/{id}/enroll', [EnrolmentController::class, 'store']);
 
-
-// Route::group(['middleware' => ['auth:sanctum']],  function () {
-//     return 'good';
-// });
-
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
 });
+
+

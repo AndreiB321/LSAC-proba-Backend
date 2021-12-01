@@ -26,7 +26,6 @@ class ReviewsController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-           
             'message' => ['required', 'max:500'],
             'user_id' => 'required'
         ]);

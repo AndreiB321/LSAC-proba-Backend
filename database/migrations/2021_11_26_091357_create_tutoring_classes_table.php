@@ -17,6 +17,7 @@ class CreateTutoringClassesTable extends Migration
             $table->id();
             $table->string('description', 500);
             $table->unsignedBigInteger('teacher_id');
+            $table->foreign('teacher_id')->references('id')->on('users');
             $table->string('subject', 80);
             $table->timestamps();
         });

@@ -18,21 +18,20 @@ class ContactRequestsController extends Controller
 
         if ($request->has('filterBy')) {
 
-            $jj = $request->get('filterBy');
-            $fields = json_decode($jj, true);
+            $filterRequest = $request->get('filterBy');
+            $fields = json_decode($filterRequest, true);
             
             if (array_key_exists('email', $fields)) {
-                $contacts = $contacts->where('email', $fields['email'])->first();
+                $contacts = $contacts->where('email', $fields['email'])->values();
             }
 
             if (array_key_exists('is_resolved', $fields)) {
-                $contacts = $contacts->where('is_resolved', $fields['is_resolved'])->first();
+                $contacts = $contacts->where('is_resolved', $fields['is_resolved'])->values();
             }
             
             if (array_key_exists('message', $fields)) {
-                $contacts = $contacts->where('message', $fields['message'])->first();
+                $contacts = $contacts->where('message', $fields['message'])->values();
             }
-
 
             return $contacts;
         }

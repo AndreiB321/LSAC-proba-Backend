@@ -14,4 +14,10 @@ class TutoringClass extends Model
         'teacher_id',
         'subject'
     ];
+
+
+    
+    public function user() {
+        return $this->belongsToMany(User::class, 'enrolments')->withTimestamps();
+    }
 }
